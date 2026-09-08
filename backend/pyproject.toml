@@ -12,6 +12,7 @@ dependencies = [
     "sqlalchemy",
     "alembic",
     "polars",
+    "pyarrow",
     "scikit-learn",
     "xgboost",
     "optuna",

@@ -55,6 +55,7 @@ models/
 data/
 *.csv
 !*.csv.example
+backend/ml/eda/outputs/
 
 # Docker
 docker-compose.override.yml
