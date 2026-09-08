@@ -20,6 +20,20 @@ ML_PACKAGES = [
     "matplotlib",
 ]
 
+APP_PACKAGES = [
+    "app.api",
+    "app.api.v1",
+    "app.schemas",
+    "app.services",
+    "app.db",
+    "ml",
+    "ml.inference",
+    "ml.training",
+    "ml.features",
+    "ml.artifacts",
+    "ml.utils",
+]
+
 
 @pytest.mark.parametrize("package", BACKEND_PACKAGES + ML_PACKAGES)
 def test_package_importable(package: str) -> None:
@@ -27,3 +41,9 @@ def test_package_importable(package: str) -> None:
     version = getattr(module, "__version__", None)
     assert version is not None, f"{package} does not expose __version__"
     assert isinstance(version, str) and version
+
+
+@pytest.mark.parametrize("package", APP_PACKAGES)
+def test_app_package_importable(package: str) -> None:
+    module = importlib.import_module(package)
+    assert module is not None

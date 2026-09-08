@@ -11,6 +11,21 @@ def test_settings_defaults():
     assert settings.debug is True
 
 
+def test_ml_artifacts_path_default():
+    settings = Settings(_env_file=None)
+    assert settings.ml_artifacts_path == ROOT_DIR / "ml" / "artifacts"
+
+
+def test_ml_artifacts_path_from_env(tmp_path: Path):
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        f"ML_ARTIFACTS_PATH={tmp_path / 'models'}\n",
+        encoding="utf-8",
+    )
+    settings = Settings(_env_file=env_file)
+    assert settings.ml_artifacts_path == tmp_path / "models"
+
+
 def test_settings_load_from_env_file(tmp_path: Path):
     env_file = tmp_path / ".env"
     env_file.write_text(

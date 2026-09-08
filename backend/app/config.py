@@ -16,3 +16,4 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     debug: bool = True
+    ml_artifacts_path: Path = ROOT_DIR / "ml" / "artifacts"
