@@ -15,10 +15,11 @@ Aplicación fullstack con separación clara de frontend, backend y módulos de m
 
 ## Requisitos previos
 
-- Docker y Docker Compose
-- Python 3.11+
-- Node.js 18+
-- Make
+- **Python 3.12** (usado por el backend; gestionado por `uv`)
+- **uv** ([instalación](https://docs.astral.sh/uv/getting-started/installation/)) — gestor de dependencias y entornos del backend
+- **Node.js 18+** y **npm** — tooling del frontend
+- **Make** (GNU Make en Linux/macOS; `make` en Windows vía Git Bash o similar)
+- **Playwright browsers** — se instalan con `npx playwright install chromium` la primera vez que se vaya a ejecutar `make test`
 
 ## Inicio rápido
 
@@ -27,27 +28,45 @@ Aplicación fullstack con separación clara de frontend, backend y módulos de m
 git clone https://github.com/Glezino/project8-ds2.git
 cd project8-ds2
 
-# Configurar el entorno
-cp .env.example .env
-# Editar .env con tus variables de entorno
-
-# Instalar dependencias y levantar servicios
+# Instalar dependencias del backend y frontend y crear .env si no existe
 make setup
 
-# Iniciar el desarrollo
+# Iniciar el desarrollo (backend en :8000, frontend en :5173)
 make start
 ```
+
+`make setup` ejecuta `uv sync` en `backend/`, `npm install` en `frontend/` y crea `.env` a partir de `.env.example` si aún no existe.
+
+## Variables de entorno (.env)
+
+El archivo `.env` en la raíz del repositorio es la única fuente de configuración para ambos stacks. Copia `.env.example` a `.env` y completa los valores:
+
+- **Backend** (leído por `backend/app/config.py` vía `pydantic-settings`): `DATABASE_URL`, `API_HOST`, `API_PORT`, `DEBUG`
+- **Frontend** (leído por `src/lib/api.ts` vía `import.meta.env`): `VITE_API_URL`
+
+`.env` está ignorado por version control y nunca debe commitearse.
 
 ## Comandos disponibles
 
 ```bash
 make help          # Ver todos los comandos disponibles
 make setup         # Instalar dependencias y configurar el entorno
-make start         # Levantar todos los servicios
-make test          # Ejecutar la suite de tests
-make lint          # Ejecutar el linter
-make stop          # Detener todos los servicios
+make start         # Levantar backend (uvicorn) y frontend (vite)
+make stop          # Detener backend y frontend
+make test          # Ejecutar backend (pytest) y frontend (Playwright)
+make lint          # Ejecutar ruff, ESLint y Prettier check
+make clean         # Eliminar .venv, node_modules y cachés
 ```
+
+| Target   | Descripción |
+|----------|-------------|
+| `help`   | Muestra todos los comandos disponibles |
+| `setup`  | Instala dependencias (uv sync + npm install) y crea `.env` si falta |
+| `start`  | Levanta los dev servers (uvicorn en :8000, vite en :5173) |
+| `stop`   | Detiene ambos dev servers |
+| `test`   | Ejecuta `pytest` (backend) y Playwright (frontend) |
+| `lint`   | Ejecuta `ruff check`, `ruff format --check`, `eslint`, `prettier --check` |
+| `clean`  | Elimina `.venv`, `node_modules`, `dist` y cachés |
 
 ## Stack tecnológico
 
