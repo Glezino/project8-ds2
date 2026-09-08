@@ -42,7 +42,8 @@ make start
 El archivo `.env` en la raíz del repositorio es la única fuente de configuración para ambos stacks. Copia `.env.example` a `.env` y completa los valores:
 
 - **Backend** (leído por `backend/app/config.py` vía `pydantic-settings`): `DATABASE_URL`, `API_HOST`, `API_PORT`, `DEBUG`
-- **Frontend** (leído por `src/lib/api.ts` vía `import.meta.env`): `VITE_API_URL`
+- **Frontend** (leído por `frontend/src/api/client.ts` vía `import.meta.env`): `VITE_API_URL`
+- **PostgreSQL local** (docker-compose): `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
 
 `.env` está ignorado por version control y nunca debe commitearse.
 
