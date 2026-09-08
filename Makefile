@@ -1,7 +1,7 @@
-.PHONY: help setup start stop test lint clean
+.PHONY: help setup start stop test test-unit test-integration test-frontend test-e2e lint clean
 
 help: ## Show available commands
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
 
 setup: ## Install dependencies and configure the environment
 	@echo "Installing backend dependencies (uv sync)..."
@@ -22,9 +22,22 @@ stop: ## Stop the backend and frontend dev servers
 	@for pid in $$(netstat -ano 2>/dev/null | grep 'LISTENING' | grep -E ':8000|:5173' | awk '{print $$NF}' | sort -u); do taskkill //F //PID $$pid >/dev/null 2>&1; done
 	@echo "Services stopped."
 
-test: ## Run the backend and frontend test suites
-	@echo "Running backend tests (pytest)..."
-	cd backend && uv run pytest
+test: test-unit test-integration test-frontend test-e2e ## Run the full test suite (unit, integration, frontend, e2e)
+	@echo "All test suites passed."
+
+test-unit: ## Run the backend unit tests (pytest, excluding integration)
+	@echo "Running backend unit tests (pytest)..."
+	cd backend && uv run pytest --ignore=tests/integration
+
+test-integration: ## Run the backend integration tests (pytest tests/integration)
+	@echo "Running backend integration tests (pytest)..."
+	cd backend && uv run pytest tests/integration
+
+test-frontend: ## Run the frontend component tests (vitest)
+	@echo "Running frontend component tests (vitest)..."
+	cd frontend && npm run test:unit
+
+test-e2e: ## Run the frontend end-to-end tests (Playwright)
 	@echo "Running frontend end-to-end tests (Playwright)..."
 	cd frontend && npm run test:e2e
 
