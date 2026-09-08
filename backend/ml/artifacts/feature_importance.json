@@ -1,0 +1,42 @@
+[
+  {
+    "feature": "age",
+    "importance": 0.32071325182914734
+  },
+  {
+    "feature": "ever_married",
+    "importance": 0.1698329597711563
+  },
+  {
+    "feature": "hypertension",
+    "importance": 0.11404255032539368
+  },
+  {
+    "feature": "avg_glucose_level",
+    "importance": 0.08855659514665604
+  },
+  {
+    "feature": "smoking_status",
+    "importance": 0.06162448972463608
+  },
+  {
+    "feature": "bmi",
+    "importance": 0.06114073470234871
+  },
+  {
+    "feature": "work_type",
+    "importance": 0.05209913104772568
+  },
+  {
+    "feature": "heart_disease",
+    "importance": 0.0512784905731678
+  },
+  {
+    "feature": "gender",
+    "importance": 0.04571014642715454
+  },
+  {
+    "feature": "Residence_type",
+    "importance": 0.035001691430807114
+  }
+]
