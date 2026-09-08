@@ -127,17 +127,26 @@ components), `api/` (Axios client + `types.ts` API contract), `hooks/`, `lib/`
 (utilities). The backend API contract is mirrored in `src/api/types.ts` and
 manually kept in sync with `app/schemas/`.
 
-### ADR-5: Docker for local PostgreSQL only (for now)
+### ADR-5: Docker for the full development stack
 
-`docker-compose.yml` at the repo root provides PostgreSQL for local development.
-Application services are not containerized yet; the per-service Docker layout is
-the documented future direction.
+`docker-compose.yml` at the repo root provides PostgreSQL, the backend, and the
+frontend as separate containers on a shared internal network (`app-net`) for
+local development. Each service has its own Dockerfile (per-service Docker
+layout). Only browser-facing ports (`backend: 8000`, `frontend: 5173`) are
+exposed to the host; the database is reachable only by service name inside the
+network. For day-to-day development, a git-ignored `docker-compose.override.yml`
+bind-mounts `backend/` and `frontend/` and enables hot-reload (uvicorn `--reload`,
+Vite HMR). The host-based `make start` path remains available as an alternative.
 
 ### ADR-6: Configuration
 
 Backend reads `.env` via pydantic-settings (`backend/app/config.py`), including
 `ML_ARTIFACTS_PATH`. Frontend reads `VITE_API_URL` via `import.meta.env`.
 Database credentials come from `POSTGRES_*` vars used by `docker-compose.yml`.
+Inside Docker, `docker-compose.yml` sets `DATABASE_URL` to the `db` service
+name on the internal network and passes `VITE_API_URL` as a frontend build arg
+(it is inlined at build time); the host `make start` path reads both from the
+root `.env` as before.
 
 ## 4. API Contract
 
