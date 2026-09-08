@@ -50,13 +50,17 @@ El archivo `.env` en la raíz del repositorio es la única fuente de configuraci
 ## Comandos disponibles
 
 ```bash
-make help          # Ver todos los comandos disponibles
-make setup         # Instalar dependencias y configurar el entorno
-make start         # Levantar backend (uvicorn) y frontend (vite)
-make stop          # Detener backend y frontend
-make test          # Ejecutar backend (pytest) y frontend (Playwright)
-make lint          # Ejecutar ruff, ESLint y Prettier check
-make clean         # Eliminar .venv, node_modules y cachés
+make help            # Ver todos los comandos disponibles
+make setup           # Instalar dependencias y configurar el entorno
+make start           # Levantar backend (uvicorn) y frontend (vite)
+make stop            # Detener backend y frontend
+make test            # Ejecutar toda la suite de tests (unit + integration + frontend + e2e)
+make test-unit       # Tests unitarios del backend (pytest)
+make test-integration# Tests de integración del backend (pytest tests/integration)
+make test-frontend   # Tests de componentes del frontend (Vitest)
+make test-e2e        # Tests end-to-end del frontend (Playwright)
+make lint            # Ejecutar ruff, ESLint y Prettier check
+make clean           # Eliminar .venv, node_modules y cachés
 ```
 
 | Target   | Descripción |
@@ -65,9 +69,32 @@ make clean         # Eliminar .venv, node_modules y cachés
 | `setup`  | Instala dependencias (uv sync + npm install) y crea `.env` si falta |
 | `start`  | Levanta los dev servers (uvicorn en :8000, vite en :5173) |
 | `stop`   | Detiene ambos dev servers |
-| `test`   | Ejecuta `pytest` (backend) y Playwright (frontend) |
+| `test`   | Ejecuta la suite completa: `test-unit` + `test-integration` + `test-frontend` + `test-e2e` |
+| `test-unit` | Ejecuta `pytest --ignore=tests/integration` (backend) |
+| `test-integration` | Ejecuta `pytest tests/integration` (backend, SQLite en memoria) |
+| `test-frontend` | Ejecuta `npm run test:unit` (Vitest + Testing Library) |
+| `test-e2e` | Ejecuta `npm run test:e2e` (Playwright) |
 | `lint`   | Ejecuta `ruff check`, `ruff format --check`, `eslint`, `prettier --check` |
 | `clean`  | Elimina `.venv`, `node_modules`, `dist` y cachés |
+
+## Testing
+
+La estrategia de testing sigue TDD y separa los niveles en directorios distintos:
+
+```
+backend/
+  tests/                 # Tests unitarios (pytest)
+    integration/         # Tests de integración (pytest + SQLite en memoria)
+frontend/
+  src/__tests__/         # Tests de componentes (Vitest + Testing Library)
+  e2e/                   # Tests end-to-end (Playwright)
+```
+
+- **Backend (pytest + SQLite en memoria)**: los tests de integración usan una base de datos SQLite en memoria configurada en `backend/tests/conftest.py` (fixtures `client`, `db_session`, `setup_test_db`). No requieren Docker para ejecutarse.
+- **Frontend (Vitest + Testing Library)**: los tests de componentes viven en `frontend/src/__tests__/`, configurados en `frontend/vitest.config.ts` (entorno jsdom, alias `@`, setup de `@testing-library/jest-dom`).
+- **E2E (Playwright)**: los tests viven en `frontend/e2e/` y se ejecutan contra los dev servers. La primera vez instala los navegadores con `npx playwright install chromium`.
+
+Antes de hacer commit: `make lint && make test`.
 
 ## Stack tecnológico
 
